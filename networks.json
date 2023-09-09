@@ -1,0 +1,8 @@
+{
+  "goerli": {
+    "EazePay": {
+      "address": "0x55a6C3600A35dCcCe873C08326483e9cf5006b1c",
+      "startBlock": 9664186
+    }
+  }
+}
