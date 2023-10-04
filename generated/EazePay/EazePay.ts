@@ -36,16 +36,16 @@ export class Approval__Params {
   }
 }
 
-export class CurrencyWithdraw extends ethereum.Event {
-  get params(): CurrencyWithdraw__Params {
-    return new CurrencyWithdraw__Params(this);
+export class CurrencyWithdrawal extends ethereum.Event {
+  get params(): CurrencyWithdrawal__Params {
+    return new CurrencyWithdrawal__Params(this);
   }
 }
 
-export class CurrencyWithdraw__Params {
-  _event: CurrencyWithdraw;
+export class CurrencyWithdrawal__Params {
+  _event: CurrencyWithdrawal;
 
-  constructor(event: CurrencyWithdraw) {
+  constructor(event: CurrencyWithdrawal) {
     this._event = event;
   }
 
@@ -60,9 +60,53 @@ export class CurrencyWithdraw__Params {
   get amount(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
+}
 
-  get tokens(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+export class Joined extends ethereum.Event {
+  get params(): Joined__Params {
+    return new Joined__Params(this);
+  }
+}
+
+export class Joined__Params {
+  _event: Joined;
+
+  constructor(event: Joined) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get userId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
+export class RechargedToken extends ethereum.Event {
+  get params(): RechargedToken__Params {
+    return new RechargedToken__Params(this);
+  }
+}
+
+export class RechargedToken__Params {
+  _event: RechargedToken;
+
+  constructor(event: RechargedToken) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get currencySymbol(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -92,57 +136,84 @@ export class Transfer__Params {
   }
 }
 
-export class joined extends ethereum.Event {
-  get params(): joined__Params {
-    return new joined__Params(this);
-  }
-}
+export class EazePay__userIdToDetailsResult {
+  value0: string;
+  value1: boolean;
+  value2: Address;
+  value3: BigInt;
+  value4: BigInt;
 
-export class joined__Params {
-  _event: joined;
-
-  constructor(event: joined) {
-    this._event = event;
-  }
-
-  get user(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get id(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-}
-
-export class rechargedToken extends ethereum.Event {
-  get params(): rechargedToken__Params {
-    return new rechargedToken__Params(this);
-  }
-}
-
-export class rechargedToken__Params {
-  _event: rechargedToken;
-
-  constructor(event: rechargedToken) {
-    this._event = event;
+  constructor(
+    value0: string,
+    value1: boolean,
+    value2: Address,
+    value3: BigInt,
+    value4: BigInt
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+    this.value3 = value3;
+    this.value4 = value4;
   }
 
-  get user(): Address {
-    return this._event.parameters[0].value.toAddress();
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromString(this.value0));
+    map.set("value1", ethereum.Value.fromBoolean(this.value1));
+    map.set("value2", ethereum.Value.fromAddress(this.value2));
+    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
+    map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
+    return map;
   }
 
-  get currencySymbol(): string {
-    return this._event.parameters[1].value.toString();
+  getUsername(): string {
+    return this.value0;
   }
 
-  get amount(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+  getIsActive(): boolean {
+    return this.value1;
+  }
+
+  getUserAddress(): Address {
+    return this.value2;
+  }
+
+  getUserId(): BigInt {
+    return this.value3;
+  }
+
+  getBalance(): BigInt {
+    return this.value4;
   }
 }
 
 export class EazePay extends ethereum.SmartContract {
   static bind(address: Address): EazePay {
     return new EazePay("EazePay", address);
+  }
+
+  addressToUserId(param0: Address): BigInt {
+    let result = super.call(
+      "addressToUserId",
+      "addressToUserId(address):(uint256)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_addressToUserId(param0: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "addressToUserId",
+      "addressToUserId(address):(uint256)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   allowance(owner: Address, spender: Address): BigInt {
@@ -206,21 +277,6 @@ export class EazePay extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  controller(): Address {
-    let result = super.call("controller", "controller():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_controller(): ethereum.CallResult<Address> {
-    let result = super.tryCall("controller", "controller():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   currencyPrices(param0: string): BigInt {
@@ -291,27 +347,6 @@ export class EazePay extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  idToBalance(param0: BigInt): BigInt {
-    let result = super.call("idToBalance", "idToBalance(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
-    ]);
-
-    return result[0].toBigInt();
-  }
-
-  try_idToBalance(param0: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "idToBalance",
-      "idToBalance(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   increaseAllowance(spender: Address, addedValue: BigInt): boolean {
@@ -477,50 +512,43 @@ export class EazePay extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  userId_Address(param0: BigInt): Address {
+  userIdToDetails(param0: BigInt): EazePay__userIdToDetailsResult {
     let result = super.call(
-      "userId_Address",
-      "userId_Address(uint256):(address)",
+      "userIdToDetails",
+      "userIdToDetails(uint256):(string,bool,address,uint256,uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
-    return result[0].toAddress();
+    return new EazePay__userIdToDetailsResult(
+      result[0].toString(),
+      result[1].toBoolean(),
+      result[2].toAddress(),
+      result[3].toBigInt(),
+      result[4].toBigInt()
+    );
   }
 
-  try_userId_Address(param0: BigInt): ethereum.CallResult<Address> {
+  try_userIdToDetails(
+    param0: BigInt
+  ): ethereum.CallResult<EazePay__userIdToDetailsResult> {
     let result = super.tryCall(
-      "userId_Address",
-      "userId_Address(uint256):(address)",
+      "userIdToDetails",
+      "userIdToDetails(uint256):(string,bool,address,uint256,uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  userId_Username(param0: BigInt): string {
-    let result = super.call(
-      "userId_Username",
-      "userId_Username(uint256):(string)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
+    return ethereum.CallResult.fromValue(
+      new EazePay__userIdToDetailsResult(
+        value[0].toString(),
+        value[1].toBoolean(),
+        value[2].toAddress(),
+        value[3].toBigInt(),
+        value[4].toBigInt()
+      )
     );
-
-    return result[0].toString();
-  }
-
-  try_userId_Username(param0: BigInt): ethereum.CallResult<string> {
-    let result = super.tryCall(
-      "userId_Username",
-      "userId_Username(uint256):(string)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toString());
   }
 }
 
@@ -593,40 +621,6 @@ export class ApproveCall__Outputs {
 
   get value0(): boolean {
     return this._call.outputValues[0].value.toBoolean();
-  }
-}
-
-export class BurnCall extends ethereum.Call {
-  get inputs(): BurnCall__Inputs {
-    return new BurnCall__Inputs(this);
-  }
-
-  get outputs(): BurnCall__Outputs {
-    return new BurnCall__Outputs(this);
-  }
-}
-
-export class BurnCall__Inputs {
-  _call: BurnCall;
-
-  constructor(call: BurnCall) {
-    this._call = call;
-  }
-
-  get account(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get amount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class BurnCall__Outputs {
-  _call: BurnCall;
-
-  constructor(call: BurnCall) {
-    this._call = call;
   }
 }
 
@@ -736,36 +730,32 @@ export class JoinCall__Outputs {
   }
 }
 
-export class MintCall extends ethereum.Call {
-  get inputs(): MintCall__Inputs {
-    return new MintCall__Inputs(this);
+export class PauseUserCall extends ethereum.Call {
+  get inputs(): PauseUserCall__Inputs {
+    return new PauseUserCall__Inputs(this);
   }
 
-  get outputs(): MintCall__Outputs {
-    return new MintCall__Outputs(this);
+  get outputs(): PauseUserCall__Outputs {
+    return new PauseUserCall__Outputs(this);
   }
 }
 
-export class MintCall__Inputs {
-  _call: MintCall;
+export class PauseUserCall__Inputs {
+  _call: PauseUserCall;
 
-  constructor(call: MintCall) {
+  constructor(call: PauseUserCall) {
     this._call = call;
   }
 
-  get account(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get amount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+  get id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
   }
 }
 
-export class MintCall__Outputs {
-  _call: MintCall;
+export class PauseUserCall__Outputs {
+  _call: PauseUserCall;
 
-  constructor(call: MintCall) {
+  constructor(call: PauseUserCall) {
     this._call = call;
   }
 }
@@ -804,36 +794,6 @@ export class RechargeCall__Outputs {
   _call: RechargeCall;
 
   constructor(call: RechargeCall) {
-    this._call = call;
-  }
-}
-
-export class SetControllerCall extends ethereum.Call {
-  get inputs(): SetControllerCall__Inputs {
-    return new SetControllerCall__Inputs(this);
-  }
-
-  get outputs(): SetControllerCall__Outputs {
-    return new SetControllerCall__Outputs(this);
-  }
-}
-
-export class SetControllerCall__Inputs {
-  _call: SetControllerCall;
-
-  constructor(call: SetControllerCall) {
-    this._call = call;
-  }
-
-  get newController(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class SetControllerCall__Outputs {
-  _call: SetControllerCall;
-
-  constructor(call: SetControllerCall) {
     this._call = call;
   }
 }
@@ -949,6 +909,36 @@ export class TransferFromCall__Outputs {
 
   get value0(): boolean {
     return this._call.outputValues[0].value.toBoolean();
+  }
+}
+
+export class UnPauseUserCall extends ethereum.Call {
+  get inputs(): UnPauseUserCall__Inputs {
+    return new UnPauseUserCall__Inputs(this);
+  }
+
+  get outputs(): UnPauseUserCall__Outputs {
+    return new UnPauseUserCall__Outputs(this);
+  }
+}
+
+export class UnPauseUserCall__Inputs {
+  _call: UnPauseUserCall;
+
+  constructor(call: UnPauseUserCall) {
+    this._call = call;
+  }
+
+  get id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class UnPauseUserCall__Outputs {
+  _call: UnPauseUserCall;
+
+  constructor(call: UnPauseUserCall) {
+    this._call = call;
   }
 }
 

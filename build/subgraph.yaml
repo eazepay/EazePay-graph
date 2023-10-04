@@ -6,31 +6,31 @@ dataSources:
     name: EazePay
     network: goerli
     source:
-      address: "0x55a6C3600A35dCcCe873C08326483e9cf5006b1c"
+      address: "0x617b239E0131d3B7479Ad30d577F66a4D53c7297"
       abi: EazePay
-      startBlock: 9664186
+      startBlock: 9718852
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Approval
-        - CurrencyWithdraw
+        - CurrencyWithdrawal
+        - Joined
+        - RechargedToken
         - Transfer
-        - joined
-        - rechargedToken
       abis:
         - name: EazePay
           file: EazePay/abis/EazePay.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
-        - event: CurrencyWithdraw(indexed address,string,uint256,uint256)
-          handler: handleCurrencyWithdraw
+        - event: CurrencyWithdrawal(indexed address,string,uint256)
+          handler: handleCurrencyWithdrawal
+        - event: Joined(indexed address,uint256)
+          handler: handleJoined
+        - event: RechargedToken(indexed address,string,uint256)
+          handler: handleRechargedToken
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-        - event: joined(address,uint256)
-          handler: handlejoined
-        - event: rechargedToken(indexed address,string,uint256)
-          handler: handlerechargedToken
       file: EazePay/EazePay.wasm

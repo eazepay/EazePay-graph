@@ -52,15 +52,53 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      }
+    ],
+    "name": "CurrencyWithdrawal",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "tokens",
+        "name": "userId",
         "type": "uint256"
       }
     ],
-    "name": "CurrencyWithdraw",
+    "name": "Joined",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "currencySymbol",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "RechargedToken",
     "type": "event"
   },
   {
@@ -89,48 +127,11 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "joined",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "currencySymbol",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "rechargedToken",
-    "type": "event"
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "addressToUserId",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -158,23 +159,6 @@
     ],
     "name": "balanceOf",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "burn",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "controller",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -207,13 +191,6 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "idToBalance",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       { "internalType": "address", "name": "spender", "type": "address" },
       { "internalType": "uint256", "name": "addedValue", "type": "uint256" }
@@ -233,16 +210,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "name",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
@@ -257,21 +224,19 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "id", "type": "uint256" },
-      { "internalType": "string", "name": "currencySymbol", "type": "string" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "recharge",
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "name": "pauseUser",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "newController", "type": "address" }
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      { "internalType": "string", "name": "currencySymbol", "type": "string" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
-    "name": "setController",
+    "name": "recharge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -322,6 +287,13 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "name": "unPauseUser",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "userId",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -330,15 +302,14 @@
   },
   {
     "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "userId_Address",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "userId_Username",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "name": "userIdToDetails",
+    "outputs": [
+      { "internalType": "string", "name": "username", "type": "string" },
+      { "internalType": "bool", "name": "isActive", "type": "bool" },
+      { "internalType": "address", "name": "userAddress", "type": "address" },
+      { "internalType": "uint256", "name": "userId", "type": "uint256" },
+      { "internalType": "uint256", "name": "balance", "type": "uint256" }
+    ],
     "stateMutability": "view",
     "type": "function"
   },

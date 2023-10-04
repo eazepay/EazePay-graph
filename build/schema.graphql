@@ -8,12 +8,30 @@ type Approval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type CurrencyWithdraw @entity(immutable: true) {
+type CurrencyWithdrawal @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   currencySymbol: String! # string
   amount: BigInt! # uint256
-  tokens: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Joined @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  userId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RechargedToken @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  currencySymbol: String! # string
+  amount: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
@@ -24,25 +42,6 @@ type Transfer @entity(immutable: true) {
   from: Bytes! # address
   to: Bytes! # address
   value: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type joined @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  EazePay_id: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type rechargedToken @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  currencySymbol: String! # string
-  amount: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

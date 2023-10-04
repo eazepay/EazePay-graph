@@ -2,10 +2,10 @@ import { newMockEvent } from "matchstick-as"
 import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
 import {
   Approval,
-  CurrencyWithdraw,
-  Transfer,
-  joined,
-  rechargedToken
+  CurrencyWithdrawal,
+  Joined,
+  RechargedToken,
+  Transfer
 } from "../generated/EazePay/EazePay"
 
 export function createApprovalEvent(
@@ -30,33 +30,69 @@ export function createApprovalEvent(
   return approvalEvent
 }
 
-export function createCurrencyWithdrawEvent(
+export function createCurrencyWithdrawalEvent(
   user: Address,
   currencySymbol: string,
-  amount: BigInt,
-  tokens: BigInt
-): CurrencyWithdraw {
-  let currencyWithdrawEvent = changetype<CurrencyWithdraw>(newMockEvent())
+  amount: BigInt
+): CurrencyWithdrawal {
+  let currencyWithdrawalEvent = changetype<CurrencyWithdrawal>(newMockEvent())
 
-  currencyWithdrawEvent.parameters = new Array()
+  currencyWithdrawalEvent.parameters = new Array()
 
-  currencyWithdrawEvent.parameters.push(
+  currencyWithdrawalEvent.parameters.push(
     new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
   )
-  currencyWithdrawEvent.parameters.push(
+  currencyWithdrawalEvent.parameters.push(
     new ethereum.EventParam(
       "currencySymbol",
       ethereum.Value.fromString(currencySymbol)
     )
   )
-  currencyWithdrawEvent.parameters.push(
+  currencyWithdrawalEvent.parameters.push(
     new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
   )
-  currencyWithdrawEvent.parameters.push(
-    new ethereum.EventParam("tokens", ethereum.Value.fromUnsignedBigInt(tokens))
+
+  return currencyWithdrawalEvent
+}
+
+export function createJoinedEvent(user: Address, userId: BigInt): Joined {
+  let joinedEvent = changetype<Joined>(newMockEvent())
+
+  joinedEvent.parameters = new Array()
+
+  joinedEvent.parameters.push(
+    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
+  )
+  joinedEvent.parameters.push(
+    new ethereum.EventParam("userId", ethereum.Value.fromUnsignedBigInt(userId))
   )
 
-  return currencyWithdrawEvent
+  return joinedEvent
+}
+
+export function createRechargedTokenEvent(
+  user: Address,
+  currencySymbol: string,
+  amount: BigInt
+): RechargedToken {
+  let rechargedTokenEvent = changetype<RechargedToken>(newMockEvent())
+
+  rechargedTokenEvent.parameters = new Array()
+
+  rechargedTokenEvent.parameters.push(
+    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
+  )
+  rechargedTokenEvent.parameters.push(
+    new ethereum.EventParam(
+      "currencySymbol",
+      ethereum.Value.fromString(currencySymbol)
+    )
+  )
+  rechargedTokenEvent.parameters.push(
+    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
+  )
+
+  return rechargedTokenEvent
 }
 
 export function createTransferEvent(
@@ -79,44 +115,4 @@ export function createTransferEvent(
   )
 
   return transferEvent
-}
-
-export function createjoinedEvent(user: Address, id: BigInt): joined {
-  let joinedEvent = changetype<joined>(newMockEvent())
-
-  joinedEvent.parameters = new Array()
-
-  joinedEvent.parameters.push(
-    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
-  )
-  joinedEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
-  )
-
-  return joinedEvent
-}
-
-export function createrechargedTokenEvent(
-  user: Address,
-  currencySymbol: string,
-  amount: BigInt
-): rechargedToken {
-  let rechargedTokenEvent = changetype<rechargedToken>(newMockEvent())
-
-  rechargedTokenEvent.parameters = new Array()
-
-  rechargedTokenEvent.parameters.push(
-    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
-  )
-  rechargedTokenEvent.parameters.push(
-    new ethereum.EventParam(
-      "currencySymbol",
-      ethereum.Value.fromString(currencySymbol)
-    )
-  )
-  rechargedTokenEvent.parameters.push(
-    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
-  )
-
-  return rechargedTokenEvent
 }
